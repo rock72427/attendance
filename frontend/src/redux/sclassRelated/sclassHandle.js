@@ -10,6 +10,9 @@ import {
   getSubjectsSuccess,
   getSubDetailsSuccess,
   getSubDetailsRequest,
+  deleteRequest,
+  deleteSuccess,
+  deleteFailed,
 } from "./sclassSlice";
 
 const REACT_APP_BASE_URL = "http://localhost:5000";
@@ -100,6 +103,22 @@ export const getSubjectDetails = (id, address) => async (dispatch) => {
     const result = await axios.get(`${REACT_APP_BASE_URL}/${address}/${id}`);
     if (result.data) {
       dispatch(getSubDetailsSuccess(result.data));
+    }
+  } catch (error) {
+    dispatch(getError(error));
+  }
+};
+
+export const deleteClass = (id) => async (dispatch) => {
+  dispatch(deleteRequest());
+
+  try {
+    const result = await axios.delete(`${REACT_APP_BASE_URL}/Sclass/${id}`);
+
+    if (result.data.message) {
+      dispatch(deleteFailed(result.data.message));
+    } else {
+      dispatch(deleteSuccess(id));
     }
   } catch (error) {
     dispatch(getError(error));

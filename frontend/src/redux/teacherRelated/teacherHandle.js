@@ -4,9 +4,11 @@ import {
   getSuccess,
   getFailed,
   getError,
-  postDone,
   doneSuccess,
+  postDone,
+  removeTeacher,
 } from "./teacherSlice";
+
 const REACT_APP_BASE_URL = "http://localhost:5000";
 
 export const getAllTeachers = (id) => async (dispatch) => {
@@ -54,3 +56,14 @@ export const updateTeachSubject =
       dispatch(getError(error));
     }
   };
+
+export const deleteTeacher = (teacherId) => async (dispatch) => {
+  dispatch(getRequest());
+
+  try {
+    await axios.delete(`${REACT_APP_BASE_URL}/Teacher/${teacherId}`);
+    dispatch(removeTeacher(teacherId));
+  } catch (error) {
+    dispatch(getError(error));
+  }
+};

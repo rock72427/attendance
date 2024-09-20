@@ -29,6 +29,7 @@ import {
 import {
   removeStuff,
   updateStudentFields,
+  deleteStudent,
 } from "../../../redux/studentRelated/studentHandle";
 import {
   calculateOverallAttendancePercentage,
@@ -127,8 +128,15 @@ const ViewStudent = () => {
   };
 
   const deleteHandler = () => {
-    setMessage("Sorry the delete function has been disabled for now.");
+    setMessage("Are you sure you want to delete this student?");
     setShowPopup(true);
+  };
+
+  const confirmDelete = () => {
+    dispatch(deleteStudent(studentID)).then(() => {
+      navigate("/Admin/students");
+    });
+    setShowPopup(false);
   };
 
   const removeHandler = (id, deladdress) => {

@@ -44,11 +44,16 @@ const ShowStudents = () => {
   const [showPopup, setShowPopup] = React.useState(false);
   const [message, setMessage] = React.useState("");
 
-  const deleteHandler = (deleteID, address) => {
-    console.log(deleteID);
-    console.log(address);
-    setMessage("Sorry the delete function has been disabled for now.");
-    setShowPopup(true);
+  const deleteHandler = async (deleteID) => {
+    try {
+      await dispatch(deleteUser(deleteID));
+      setMessage("Student deleted successfully.");
+      dispatch(getAllStudents(currentUser._id));
+    } catch (err) {
+      setMessage("Error deleting student: " + err.message);
+    } finally {
+      setShowPopup(true);
+    }
   };
 
   const studentColumns = [
@@ -88,7 +93,7 @@ const ShowStudents = () => {
 
     return (
       <>
-        <IconButton onClick={() => deleteHandler(row.id, "Student")}>
+        <IconButton onClick={() => deleteHandler(row.id)}>
           <PersonRemoveIcon color="error" />
         </IconButton>
         <BlueButton

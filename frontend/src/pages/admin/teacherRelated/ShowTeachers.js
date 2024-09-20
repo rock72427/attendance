@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { getAllTeachers } from "../../../redux/teacherRelated/teacherHandle";
+import {
+  getAllTeachers,
+  deleteTeacher,
+} from "../../../redux/teacherRelated/teacherHandle";
 import {
   Paper,
   Table,
@@ -13,7 +16,6 @@ import {
   Box,
   IconButton,
 } from "@mui/material";
-import { deleteUser } from "../../../redux/userRelated/userHandle";
 import PersonRemoveIcon from "@mui/icons-material/PersonRemove";
 import { StyledTableCell, StyledTableRow } from "../../../components/styles";
 import { BlueButton, GreenButton } from "../../../components/buttonStyles";
@@ -58,11 +60,14 @@ const ShowTeachers = () => {
     console.log(error);
   }
 
-  const deleteHandler = (deleteID, address) => {
-    console.log(deleteID);
-    console.log(address);
-    setMessage("Sorry the delete function has been disabled for now.");
-    setShowPopup(true);
+  const deleteHandler = async (teacherId) => {
+    if (window.confirm("Are you sure you want to delete this teacher?")) {
+      await dispatch(deleteTeacher(teacherId));
+      setMessage("Teacher deleted successfully.");
+      setShowPopup(true);
+      // Optionally, you can refresh the list of teachers
+      dispatch(getAllTeachers(currentUser._id));
+    }
   };
 
   const columns = [
@@ -86,11 +91,6 @@ const ShowTeachers = () => {
       icon: <PersonAddAlt1Icon color="primary" />,
       name: "Add New Teacher",
       action: () => navigate("/Admin/teachers/chooseclass"),
-    },
-    {
-      icon: <PersonRemoveIcon color="error" />,
-      name: "Delete All Teachers",
-      action: () => deleteHandler(currentUser._id, "Teachers"),
     },
   ];
 
@@ -154,9 +154,7 @@ const ShowTeachers = () => {
                       );
                     })}
                     <StyledTableCell align="center">
-                      <IconButton
-                        onClick={() => deleteHandler(row.id, "Teacher")}
-                      >
+                      <IconButton onClick={() => deleteHandler(row.id)}>
                         <PersonRemoveIcon color="error" />
                       </IconButton>
                       <BlueButton

@@ -5,6 +5,7 @@ import {
   getFailed,
   getError,
   stuffDone,
+  deleteSuccess,
 } from "./studentSlice";
 const REACT_APP_BASE_URL = "http://localhost:5000";
 export const getAllStudents = (id) => async (dispatch) => {
@@ -19,6 +20,22 @@ export const getAllStudents = (id) => async (dispatch) => {
     }
   } catch (error) {
     dispatch(getError(error));
+  }
+};
+
+export const deleteStudent = (id) => async (dispatch) => {
+  dispatch(getRequest());
+
+  try {
+    const result = await axios.delete(`${REACT_APP_BASE_URL}/Students/${id}`);
+    if (result.status === 204) {
+      // No content means deletion was successful
+      dispatch(stuffDone());
+    } else {
+      dispatch(getFailed(result.data.message));
+    }
+  } catch (error) {
+    dispatch(getError(error.message || "Failed to delete student."));
   }
 };
 

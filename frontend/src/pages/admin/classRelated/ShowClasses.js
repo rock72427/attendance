@@ -10,7 +10,7 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { deleteUser } from "../../../redux/userRelated/userHandle";
+import { deleteClass } from "../../../redux/sclassRelated/sclassHandle"; // Import the delete action
 import { getAllSclasses } from "../../../redux/sclassRelated/sclassHandle";
 import { BlueButton, GreenButton } from "../../../components/buttonStyles";
 import TableTemplate from "../../../components/TableTemplate";
@@ -45,11 +45,21 @@ const ShowClasses = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [message, setMessage] = useState("");
 
-  const deleteHandler = (deleteID, address) => {
-    console.log(deleteID);
-    console.log(address);
-    setMessage("Sorry the delete function has been disabled for now.");
-    setShowPopup(true);
+  const deleteHandler = async (deleteID) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this class?"
+    );
+    if (confirmed) {
+      try {
+        await dispatch(deleteClass(deleteID));
+        setMessage("Class deleted successfully.");
+        setShowPopup(true);
+        navigate("/Admin/profile");
+      } catch (err) {
+        setMessage("Failed to delete the class. Please try again.");
+        setShowPopup(true);
+      }
+    }
   };
 
   const sclassColumns = [{ id: "name", label: "Class Name", minWidth: 170 }];
@@ -79,10 +89,7 @@ const ShowClasses = () => {
     ];
     return (
       <ButtonContainer>
-        <IconButton
-          onClick={() => deleteHandler(row.id, "Sclass")}
-          color="secondary"
-        >
+        <IconButton onClick={() => deleteHandler(row.id)} color="secondary">
           <DeleteIcon color="error" />
         </IconButton>
         <BlueButton
@@ -140,7 +147,7 @@ const ShowClasses = () => {
           anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
         >
           {actions.map((action) => (
-            <MenuItem onClick={action.action}>
+            <MenuItem onClick={action.action} key={action.name}>
               <ListItemIcon fontSize="small">{action.icon}</ListItemIcon>
               {action.name}
             </MenuItem>
@@ -155,11 +162,6 @@ const ShowClasses = () => {
       icon: <AddCardIcon color="primary" />,
       name: "Add New Class",
       action: () => navigate("/Admin/addclass"),
-    },
-    {
-      icon: <DeleteIcon color="error" />,
-      name: "Delete All Classes",
-      action: () => deleteHandler(adminID, "Sclasses"),
     },
   ];
 
